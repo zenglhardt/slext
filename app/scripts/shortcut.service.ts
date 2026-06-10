@@ -44,6 +44,10 @@ export class Shortcut extends Dispatcher {
                 furtherAllowed.has(e.which) ? furtherAllowed.get(e.which) : "",
             ].filter(nonEmpty);
             const dispatchString = pressed.sort().join("+");
+            if (!this.listeners.has(dispatchString)) {
+                return;
+            }
+
             this.dispatch(dispatchString, e);
         });
 

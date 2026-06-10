@@ -20,7 +20,6 @@ function projectLoaded(url) {
     const i = setInterval(() => {
         if (projectLoaded(window.location.href)) {
             clearInterval(i);
-            PageHook.inject();
             const slext: Slext = Container.get(Slext);
             const interval = setInterval(() => {
                 if (!slext.isLoaded()) return;

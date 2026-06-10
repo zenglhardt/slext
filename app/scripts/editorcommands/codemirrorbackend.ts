@@ -14,7 +14,7 @@ export class CodeMirrorEditorBackend implements EditorBackend {
     getSelectionLength(): Promise<number> {
         return new Promise((resolve, _reject) => {
             const listener = (evt: CustomEvent) => {
-                const length = evt.detail;
+                const length = parseInt(evt.detail, 10);
                 document.removeEventListener("slext:codemirror:provideSelectionLength", listener);
                 resolve(length);
             };
@@ -25,7 +25,7 @@ export class CodeMirrorEditorBackend implements EditorBackend {
     getCurrentLine(): Promise<EditorLine> {
         return new Promise((resolve, _reject) => {
             const listener = (evt: CustomEvent) => {
-                const result = evt.detail;
+                const result = JSON.parse(evt.detail);
                 document.removeEventListener("slext:codemirror:provideLineInfo", listener);
                 resolve(result);
             };

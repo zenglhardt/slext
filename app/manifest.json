@@ -15,16 +15,17 @@
     "content_scripts": [
         {
             "matches": ["https://www.sharelatex.com/*", "https://*.overleaf.com/*"],
+            "js": ["scripts/injected.js"],
+            "run_at": "document_start",
+            "all_frames": false,
+            "world": "MAIN"
+        },
+        {
+            "matches": ["https://www.sharelatex.com/*", "https://*.overleaf.com/*"],
             "css": ["styles/contentscript.css", "styles/theme.css"],
             "js": ["scripts/loader.js"],
             "run_at": "document_end",
             "all_frames": false
-        }
-    ],
-    "web_accessible_resources": [
-        {
-            "resources": ["scripts/injected.js"],
-            "matches": ["https://*.overleaf.com/*"]
         }
     ],
     "action": {

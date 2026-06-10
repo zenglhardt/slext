@@ -32,10 +32,11 @@ export class ElementHiderModule {
     }
 
     private setClasses(element: string, hidden: boolean): void {
+        const targets = $("body, #editor, .ide-redesign-editor-content, .cm-editor");
         if (hidden) {
-            $("#editor").addClass(element + "_hidden");
+            targets.addClass(element + "_hidden");
         } else {
-            $("#editor").removeClass(element + "_hidden");
+            targets.removeClass(element + "_hidden");
         }
     }
 }

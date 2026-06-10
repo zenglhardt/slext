@@ -36,7 +36,7 @@ export class Settings extends Dispatcher {
     constructor() {
         super();
         const button = $(
-            '<div class="toolbar-item"><button class="btn btn-full-height"><i class="fa fa-cog"></i><p class="toolbar-label">SLext Settings</p></button></div>'
+            '<div class="toolbar-item slext-settings-toolbar-item"><button type="button" class="btn btn-full-height slext-settings-toolbar-button" title="SLext Settings" aria-label="SLext Settings"><span class="material-symbols slext-settings-toolbar-icon slext-settings-toolbar-icon--material" aria-hidden="true">settings</span><i class="fa fa-cog slext-settings-toolbar-icon slext-settings-toolbar-icon--fa" aria-hidden="true"></i><p class="toolbar-label">SLext Settings</p></button></div>'
         );
         const menu = $(
             Utils.format(Settings.settingsTemplate, {
@@ -106,8 +106,11 @@ export class Settings extends Dispatcher {
             this.dispatch("themeChanged", theme);
         });
 
-        $("header.toolbar .toolbar-right .toolbar-item").first().before(button);
-        button.on("click", function () {
+        this.addSettingsButton(button);
+        this.watchForToolbarChanges(button);
+        button.on("click", ".slext-settings-toolbar-button", function (e) {
+            e.preventDefault();
+            e.stopPropagation();
             menu.addClass("slext-settings--active");
         });
 
@@ -127,6 +130,57 @@ export class Settings extends Dispatcher {
         });
 
         $("body").append(menu);
+    }
+
+    private isHistoryView(): boolean {
+        return $(".history-react, .back-to-editor-btn").length > 0;
+    }
+
+    private addSettingsButton(button: JQuery<HTMLElement>, attempt = 0) {
+        if (this.isHistoryView()) {
+            button.detach();
+            return;
+        }
+
+        if ($.contains(document.documentElement, button[0])) {
+            return;
+        }
+
+        const legacyToolbarItem = $("header.toolbar .toolbar-right .toolbar-item").first();
+        if (legacyToolbarItem.length) {
+            button.removeClass("ide-redesign-toolbar-button-container slext-settings-toolbar-item--redesign");
+            button.find(".slext-settings-toolbar-button").addClass("btn btn-full-height");
+            button.find(".toolbar-label").show();
+            legacyToolbarItem.before(button);
+            return;
+        }
+
+        const redesignedToolbarActions = $(".ide-redesign-toolbar-actions").first();
+        if (redesignedToolbarActions.length) {
+            button.addClass("ide-redesign-toolbar-button-container slext-settings-toolbar-item--redesign");
+            button
+                .find(".slext-settings-toolbar-button")
+                .removeClass("btn btn-full-height")
+                .addClass("ide-redesign-toolbar-button-subdued ide-redesign-toolbar-button-icon");
+            button.find(".toolbar-label").hide();
+            redesignedToolbarActions.prepend(button);
+            return;
+        }
+
+        if (attempt < 40) {
+            window.setTimeout(() => this.addSettingsButton(button, attempt + 1), 250);
+        }
+    }
+
+    private watchForToolbarChanges(button: JQuery<HTMLElement>) {
+        const observer = new MutationObserver(() => {
+            this.addSettingsButton(button);
+        });
+
+        observer.observe(document.body, {
+            childList: true,
+            subtree: true,
+        });
     }
 
     private setTheme(menu, theme) {

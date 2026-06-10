@@ -1,8 +1,119 @@
 /* CUSTOM THEMING  */
 
+.slext-settings-toolbar-item {
+    .slext-settings-toolbar-icon--material {
+        display: none;
+    }
+}
+
+body:has(.history-react) .slext-settings-toolbar-item,
+.ide-redesign-toolbar:has(.back-to-editor-btn) .slext-settings-toolbar-item {
+    display: none !important;
+}
+
+.ide-redesign-toolbar-actions {
+    .slext-settings-toolbar-item--redesign {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    .slext-settings-toolbar-button {
+        align-items: center;
+        background: transparent;
+        border: 0;
+        border-radius: var(--border-radius-full, 999px);
+        color: var(--redesign-subdued-button-color, currentColor);
+        cursor: pointer;
+        display: flex;
+        height: 32px;
+        justify-content: center;
+        min-width: 32px;
+        padding: var(--spacing-02, 4px);
+
+        &:focus,
+        &:hover {
+            background: var(--redesign-subdued-button-hover-background, rgba(255, 255, 255, 0.1));
+            color: var(--redesign-subdued-button-color, currentColor);
+        }
+    }
+
+    .slext-settings-toolbar-icon--material {
+        display: inline-flex;
+        font-size: 20px;
+        line-height: 1;
+    }
+
+    .slext-settings-toolbar-icon--fa {
+        display: none;
+    }
+}
+
+.slext-compile-main-button-icon--material {
+    display: none;
+}
+
+.toolbar-pdf-left {
+    .slext-compile-main-button-group {
+        align-items: center;
+        display: flex;
+        margin-left: var(--spacing-02, 4px);
+    }
+
+    .slext-compile-main-button {
+        align-items: center;
+        background: var(--bg-accent-01, var(--accentColor));
+        border: 0;
+        border-radius: 12px;
+        color: var(--content-primary-dark, var(--accentColorActive));
+        display: flex;
+        font-size: var(--font-size-02, 12px);
+        gap: var(--spacing-01, 4px);
+        height: 24px;
+        line-height: 24px;
+        padding: 0 var(--spacing-04, 10px);
+
+        &:focus,
+        &:hover {
+            background: var(--bg-accent-02, var(--accentColorHover));
+            color: var(--content-primary-dark, var(--accentColorActive));
+        }
+    }
+
+    .slext-compile-main-button-icon--material {
+        display: inline-flex;
+        font-size: 16px;
+        line-height: 1;
+    }
+
+    .slext-compile-main-button-icon--fa {
+        display: none;
+    }
+}
+
+body.slext-automating-layout-menu {
+    .layout-dropdown .dropdown-menu,
+    .dropdown-menu.show {
+        opacity: 0 !important;
+        pointer-events: none !important;
+    }
+}
+
 .ide-react-body.ide-tabs,
 #ide-body.ide-tabs {
     top: 80px;
+}
+
+.ide-redesign-main.ide-tabs {
+    .slext-tabs__wrapper {
+        flex: 0 0 40px;
+        position: relative;
+        z-index: 20;
+    }
+
+    .ide-redesign-body {
+        min-height: 0;
+    }
 }
 
 #ide-body.ide-history-open {
@@ -39,30 +150,83 @@
     }
 
     &__tab {
+        align-items: center;
         font-size: 1rem;
         background-color: rgba(0, 0, 0, 0.1);
-        padding: 0 10px;
-        display: inline-block;
+        padding: 0 6px 0 10px;
+        display: inline-flex;
+        gap: 6px;
         height: 39px;
         line-height: 39px;
         cursor: default;
         z-index: 10;
         position: relative;
+        vertical-align: top;
 
         &:not(:hover) * {
             pointer-events: none;
         }
 
-        .slext-tabs__tab-cross {
-            margin-left: 10px;
+        .slext-tabs__tab-name {
+            max-width: min(30vw, 260px);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
 
-        .slext-tabs__tab-cross .fa:before {
+        .slext-tabs__tab-cross {
+            align-items: center;
+            background: transparent;
+            border: 0;
+            border-radius: 999px;
+            color: var(--accentColor);
+            cursor: pointer;
+            display: inline-flex;
+            height: 24px;
+            justify-content: center;
+            line-height: 1;
+            margin: 0 0 0 2px;
+            padding: 0;
+            width: 24px;
+
+            &:focus,
+            &:hover {
+                background-color: rgba(0, 0, 0, 0.18);
+                color: var(--accentColorHover);
+                outline: none;
+            }
+        }
+
+        .slext-tabs__tab-close-icon--material {
+            display: inline-flex;
+            font-size: 17px;
+            line-height: 1;
+        }
+
+        .slext-tabs__tab-close-icon--fa {
+            display: none;
+        }
+
+        .slext-tabs__tab-close-icon--fa:before {
             content: "\f00d";
             cursor: pointer;
         }
 
-        & div {
+        .slext-tabs__tab-state {
+            color: var(--accentColor);
+            display: none;
+            font-size: 16px;
+            line-height: 1;
+        }
+
+        .slext-tabs__tab-state-icon {
+            display: none;
+            font-size: 16px;
+            line-height: 1;
+        }
+
+        & > .slext-tabs__tab-icon,
+        & > .slext-tabs__tab-name {
             display: inline-block;
         }
 
@@ -77,14 +241,22 @@
 
         &--main,
         &--main.slext-tabs__tab--favorite {
-            .slext-tabs__tab-cross .fa:before {
-                content: "\f015";
+            .slext-tabs__tab-state {
+                display: inline-flex;
+            }
+
+            .slext-tabs__tab-state-icon--main {
+                display: inline-flex;
             }
         }
 
-        &--favorite {
-            .slext-tabs__tab-cross .fa:before {
-                content: "\f004";
+        &--favorite:not(.slext-tabs__tab--main) {
+            .slext-tabs__tab-state {
+                display: inline-flex;
+            }
+
+            .slext-tabs__tab-state-icon--favorite {
+                display: inline-flex;
             }
         }
 
@@ -129,7 +301,7 @@
 }
 
 .slext-settings {
-    z-index: 1000;
+    z-index: 100000;
     // reset
     h1,
     h2,
@@ -156,15 +328,14 @@
         }
     }
 
-    &--active {
+    &.slext-settings--active {
         display: block;
     }
     display: none;
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
 
     &__wrapper {
         width: 100%;
@@ -379,29 +550,63 @@
     }
 }
 
-#editor.flags_hidden {
+body.flags_hidden,
+#editor.flags_hidden,
+.ide-redesign-editor-content.flags_hidden,
+.cm-editor.flags_hidden {
     .annotation-label {
         display: none;
     }
-}
 
-#editor.cursors_hidden {
-    .remote-cursor {
-        display: none;
+    .ol-cm-cursorHighlightLabel,
+    .ol-cm-cursorTooltip {
+        display: none !important;
     }
 }
 
-:not(.rp-state-current-file-expanded) > #editor.comments_highlight_hidden {
+body.cursors_hidden,
+#editor.cursors_hidden,
+.ide-redesign-editor-content.cursors_hidden,
+.cm-editor.cursors_hidden {
+    .remote-cursor {
+        display: none;
+    }
+
+    .ol-cm-cursorHighlightsLayer {
+        display: none !important;
+    }
+}
+
+:not(.rp-state-current-file-expanded) > #editor.comments_highlight_hidden,
+body.comments_highlight_hidden,
+.ide-redesign-editor-content.comments_highlight_hidden,
+.cm-editor.comments_highlight_hidden {
     .ace-editor-wrapper .ace_dark .track-changes-comment-marker,
     .ace-editor-wrapper .track-changes-comment-marker {
         background-color: unset;
         opacity: unset;
     }
+
+    .ol-cm-change-c,
+    .ol-cm-change-highlight-c,
+    .ol-cm-change-focus-c {
+        background-color: transparent !important;
+    }
 }
 
-:not(.rp-state-current-file-expanded) > #editor.comments_underline_hidden {
+:not(.rp-state-current-file-expanded) > #editor.comments_underline_hidden,
+body.comments_underline_hidden,
+.ide-redesign-editor-content.comments_underline_hidden,
+.cm-editor.comments_underline_hidden {
     .ace-editor-wrapper .track-changes-comment-marker-callout {
         border-bottom: unset;
+    }
+
+    .ol-cm-change-c,
+    .ol-cm-change-highlight-c,
+    .ol-cm-change-focus-c {
+        border-bottom: 0 !important;
+        text-decoration: none !important;
     }
 }
 

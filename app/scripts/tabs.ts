@@ -30,6 +30,7 @@ export class TabModule {
     private temporarytab: Tab = null;
     private temporaryTabsEnabled: boolean;
     private mainTabFirst: boolean;
+    private compileToolbarObserver: MutationObserver = null;
     private settings: Settings;
     private shortcut: Shortcut;
 
@@ -39,6 +40,7 @@ export class TabModule {
         this.setupListeners();
         this.addTabBar();
         this.addCompileMainButton();
+        this.watchForCompileToolbar();
 
         function waitForFiles() {
             let checks = 100;
@@ -194,11 +196,11 @@ export class TabModule {
         $("html").on("auxclick", ".slext-tabs__tab", (e) => {
             const clickedTab = $(e.currentTarget).data("tab") as Tab;
             Logger.debug("Middle click on", clickedTab);
-            this.closeTab(clickedTab);
+            this.closeTab(clickedTab, true);
         });
 
         this.shortcut.addEventListener("Meta+W", (e) => {
-            this.closeTab(this._currentTab);
+            this.closeTab(this._currentTab, true);
             e.preventDefault();
         });
         this.shortcut.addEventListener("Meta+M", (e) => {
@@ -242,9 +244,10 @@ export class TabModule {
         this.shortcut.addEventListener("Meta+B", goToPreviousTab);
 
         $("html").on("click", ".slext-tabs__tab-cross", (e) => {
+            e.preventDefault();
             e.stopPropagation();
             const tab = $(e.currentTarget).parent().data("tab") as Tab;
-            this.closeTab(tab);
+            this.closeTab(tab, true);
         });
 
         $("html").on("click", ".slext-tabs__caret--next", function (_e) {
@@ -311,6 +314,13 @@ export class TabModule {
     private openTab(file: File, favorite?: boolean, temporary?: boolean): void {
         //Check if file is already open
         if (this._tabs.filter((f) => f.file.path == file.path).length) return;
+        if (!this.tabBar?.length) {
+            this.addTabBar();
+            if (!this.tabBar?.length) {
+                setTimeout(() => this.openTab(file, favorite, temporary), 250);
+                return;
+            }
+        }
 
         favorite = favorite || false;
 
@@ -411,12 +421,24 @@ export class TabModule {
     }
 
     protected addTabBar(): void {
+        if ($(".slext-tabs__wrapper").length > 0) {
+            this.tabBar = $(".slext-tabs__wrapper").first();
+            return;
+        }
+
+        const toolbar = $("header.toolbar, .ide-redesign-toolbar").first();
+        if (!toolbar.length) {
+            setTimeout(() => this.addTabBar(), 250);
+            return;
+        }
+
         this.tabBar = $(TabModule.tabsTemplate);
-        $("header.toolbar").after(this.tabBar);
-        $("header.toolbar").addClass("toolbar-tabs");
-        if ($(".ide-react-body").length) {
+        toolbar.after(this.tabBar);
+        toolbar.addClass("toolbar-tabs");
+        if ($(".ide-react-body, .ide-redesign-main").length) {
             this.tabBar.addClass("slext-tabs--react");
         }
+        $(".ide-redesign-main").addClass("ide-tabs");
         $("#ide-body").addClass("ide-tabs");
     }
 
@@ -442,8 +464,12 @@ export class TabModule {
             // If none of those worked. Try finding a split menu button in the
             // pdf toolbar.
             const toolbarPdfButton = $(".toolbar-pdf .split-menu-button");
-            if (toolbarPdfButton) {
+            if (toolbarPdfButton.length) {
                 return toolbarPdfButton.parent();
+            }
+            const compileButton = $(".compile-button-group .compile-button, .toolbar-pdf button.compile-button");
+            if (compileButton.length) {
+                return compileButton.first();
             }
             return null;
         };
@@ -466,7 +492,7 @@ export class TabModule {
         }, 500);
     }
 
-    protected addCompileMainButton(): void {
+    protected addCompileMainButton(attempt = 0): void {
         //Check if button is already there
         if ($(".btn-compile-main").length > 0) {
             Logger.debug("Main button already present, no need to add it again");
@@ -474,20 +500,53 @@ export class TabModule {
         }
 
         const compileMainButton = $(`
-            <div class="btn-recompile-group btn-compile-main">
-                <a class="btn btn-recompile" href>
-                    <i class="fa fa-home"></i>
-                    Compile main
-                </a>
+            <div class="btn-recompile-group btn-compile-main slext-compile-main-button-group">
+                <button type="button" class="btn btn-recompile slext-compile-main-button" title="Compile main">
+                    <span class="material-symbols slext-compile-main-button-icon slext-compile-main-button-icon--material" aria-hidden="true">home</span>
+                    <i class="fa fa-home slext-compile-main-button-icon slext-compile-main-button-icon--fa" aria-hidden="true"></i>
+                    <span class="slext-compile-main-button-label">Compile main</span>
+                </button>
             </div>
         `);
-        $(".btn-recompile-group").after(compileMainButton);
-        compileMainButton.on("click", () => {
+
+        const legacyCompileGroup = $(".btn-recompile-group").not(".btn-compile-main").last();
+        const redesignedCompileGroup = $(".toolbar-pdf-left .compile-button-group").first();
+
+        if (legacyCompileGroup.length) {
+            legacyCompileGroup.after(compileMainButton);
+        } else if (redesignedCompileGroup.length) {
+            redesignedCompileGroup.after(compileMainButton);
+        } else {
+            if (attempt < 40) {
+                window.setTimeout(() => this.addCompileMainButton(attempt + 1), 250);
+            }
+            return;
+        }
+
+        compileMainButton.on("click", (event) => {
+            event.preventDefault();
             this.compileMain();
         });
     }
 
-    private closeTab(tab: Tab | null): void {
+    private watchForCompileToolbar(): void {
+        if (this.compileToolbarObserver) {
+            return;
+        }
+
+        this.compileToolbarObserver = new MutationObserver(() => {
+            if ($(".btn-compile-main").length === 0) {
+                this.addCompileMainButton(40);
+            }
+        });
+
+        this.compileToolbarObserver.observe(document.body, {
+            childList: true,
+            subtree: true,
+        });
+    }
+
+    private closeTab(tab: Tab | null, force = false): void {
         if (!tab) {
             return;
         }
@@ -496,12 +555,15 @@ export class TabModule {
             this.fixOverlaps(overlaps);
         }
 
-        if (tab.favorite || tab == this.maintab) return;
+        if (!force && (tab.favorite || tab == this.maintab)) return;
         if (tab == this._currentTab) {
             //Need to select new tab
 
             //If only one tab open, we cannot close it
             if (this._tabs.length == 1) return;
+            if (tab == this.maintab) {
+                this.maintab = null;
+            }
 
             const index = this._tabs.indexOf(tab);
             const newIndex = Math.max(0, index - 1);
@@ -512,6 +574,9 @@ export class TabModule {
             this.selectTab(newIndex);
             this._currentTab?.tab.click();
         } else {
+            if (tab == this.maintab) {
+                this.maintab = null;
+            }
             const index = this._tabs.indexOf(tab);
             this._tabs.splice(index, 1);
             tab.tab.remove();

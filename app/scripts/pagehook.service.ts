@@ -3,12 +3,7 @@ import { Service } from "typedi";
 @Service()
 export class PageHook {
     public static inject(): void {
-        const s = document.createElement("script");
-        s.src = chrome.runtime.getURL("scripts/injected.js");
-        s.onload = function () {
-            s.remove();
-        };
-        (document.head || document.documentElement).appendChild(s);
+        // The page bridge is declared as a main-world content script in the manifest.
     }
 
     public static initialize(): void {

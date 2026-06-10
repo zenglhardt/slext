@@ -62,6 +62,9 @@ export class EditorCommands {
         if (editorSelector instanceof HTMLInputElement && editorSelector.value == "cm6") {
             return CodeEditor.CODE_MIRROR;
         }
+        if (document.querySelector(".cm-editor")) {
+            return CodeEditor.CODE_MIRROR;
+        }
         return CodeEditor.ACE;
     }
 
@@ -101,8 +104,9 @@ export class EditorCommands {
                 const col: number = line.column;
                 const text: string = line.text;
 
-                let possibleMatches = text.match(/\{([a-zA-Z0-9_./]+)\}/gi) || [];
-                possibleMatches = possibleMatches.map((x) => x.replace(/[{()}]/g, ""));
+                const possibleMatches: string[] = (text.match(/\{([a-zA-Z0-9_./]+)\}/gi) || []).map((x) =>
+                    x.replace(/[{()}]/g, "")
+                );
                 possibleMatches.forEach((match) => {
                     const firstPossibleStartPos = col - match.length;
                     const lastPossibleEndPos = col + match.length;

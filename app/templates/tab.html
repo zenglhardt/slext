@@ -1,7 +1,17 @@
 <div class="slext-tabs__tab" draggable="true">
     <div class="slext-tabs__tab-icon"></div>
     <div class="slext-tabs__tab-name">{{name}}</div>
-    <div class="slext-tabs__tab-cross">
-        <i class="fa"></i>
+    <div class="slext-tabs__tab-state" aria-hidden="true">
+        <span class="material-symbols slext-tabs__tab-state-icon slext-tabs__tab-state-icon--main">home</span>
+        <span class="material-symbols slext-tabs__tab-state-icon slext-tabs__tab-state-icon--favorite">favorite</span>
+        <i class="fa slext-tabs__tab-state-icon slext-tabs__tab-state-icon--fa"></i>
     </div>
+    <button type="button" class="slext-tabs__tab-cross slext-tabs__tab-close" title="Close tab" aria-label="Close tab">
+        <span
+            class="material-symbols slext-tabs__tab-close-icon slext-tabs__tab-close-icon--material"
+            aria-hidden="true"
+            >close</span
+        >
+        <i class="fa slext-tabs__tab-close-icon slext-tabs__tab-close-icon--fa" aria-hidden="true"></i>
+    </button>
 </div>
