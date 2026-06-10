@@ -1,5 +1,7 @@
 # SLext
 
+NOTE: This is currently a WIP fork I have made for my own personal use as updates on the original repo seem to have stopped. Feel free to use it, but consider this code as-is for now. Installation instructions for browser web stores/extension stores point to the official releases, not my modified/updated version here. If you want to use it, you will have to build it yourself. 
+
 [![Build Chrome + Firefox](https://github.com/hrjakobsen/slext/actions/workflows/build.yml/badge.svg)](https://github.com/hrjakobsen/slext/actions/workflows/build.yml)
 [![Chrome Web Store](https://img.shields.io/chrome-web-store/v/jlajbdlfgkklpjdgnhajdohfjbihming)](https://chrome.google.com/webstore/detail/slext/jlajbdlfgkklpjdgnhajdohfjbihming)
 [![Mozilla Add-on](https://img.shields.io/amo/v/slext)](https://addons.mozilla.org/en-US/firefox/addon/slext/)
