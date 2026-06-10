@@ -20,8 +20,8 @@ To install from source, clone the repository:
 ```bash
 git clone git@github.com:hrjakobsen/slext.git
 cd slext
-npm install
-npm run build:chrome
+pnpm install
+pnpm run build:chrome
 ```
 
 Then in Google Chrome, go to [chrome://extensions](chrome://extensions)
@@ -37,8 +37,8 @@ To install from source, clone the repository:
 ```bash
 git clone git@github.com:hrjakobsen/slext.git
 cd slext
-npm install
-npm run build:firefox
+pnpm install
+pnpm run build:firefox
 ```
 
 Then in Firefox, go to [about:addons](about:addons)
@@ -59,30 +59,30 @@ cd slext
 ## Install dependencies
 
 SLext is built and tested against Node 16. It is possible that a lower version will also build it.
-With Node 16 and npm installed, the dependencies for SLext can be installed with:
+With Node 16 and pnpm installed, the dependencies for SLext can be installed with:
 
 ```bash
-npm install
+pnpm install
 ```
 
 ## Running
 
 ### Google Chrome
 
-Run `$ npm run dev:chrome` and load the `dist/chrome`-directory into Chrome as an unpacked extension on [chrome://extensions → Load unpacked](chrome://extensions). After making changes to the code it will automatically be compiled, but you need to refresh the extension where you loaded it.
+Run `$ pnpm run dev:chrome` and load the `dist/chrome`-directory into Chrome as an unpacked extension on [chrome://extensions → Load unpacked](chrome://extensions). After making changes to the code it will automatically be compiled, but you need to refresh the extension where you loaded it.
 
 ### Firefox
 
-Run `$ npm run dev:firefox` and load the `dist/firefox`-directory into Firefox as an temporary add-on on [about:debugging → This Firefox → Load Temporary Add-on](about:debugging). After making changes to the code it will automatically be compiled, but you need to click "Reload" where you loaded the it.
+Run `$ pnpm run dev:firefox` and load the `dist/firefox`-directory into Firefox as an temporary add-on on [about:debugging → This Firefox → Load Temporary Add-on](about:debugging). After making changes to the code it will automatically be compiled, but you need to click "Reload" where you loaded the it.
 
 ## Building
 
 To build a release of SLext run the following command
 
 ```bash
-npm run build:chrome
+pnpm run build:chrome
 # or
-npm run build:firefox
+pnpm run build:firefox
 ```
 
 The resulting extension will be stored in the `packages` directory.
